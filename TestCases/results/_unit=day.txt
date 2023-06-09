@@ -1,0 +1,4 @@
+URL: https://lx8ssktxx9.execute-api.eu-west-1.amazonaws.com/Prod/next-birthday?unit=day
+Expected Result: dateofbirth parameter is missing
+Actual Result: 
+Status: FAIL

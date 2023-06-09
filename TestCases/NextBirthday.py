@@ -3,22 +3,12 @@ import requests
 import re
 from datetime import datetime
 
-date = ["1990-03-23", "19-09-1990"]
+date = ["1990-10-30", "19-09-1990"]
 
 
 class NextBirthdayTest(unittest.TestCase):
     base_url = "https://lx8ssktxx9.execute-api.eu-west-1.amazonaws.com/Prod/next-birthday"
 
-    def date_check(self):
-        valid_length = True if (re.findall(r"[\d]{4}-[1|0][\d]-[1|2|3][\d]", self.dob)) else False
-        if valid_length:
-            a, b, c = str(self.dob).split('-')
-            try:
-                datetime(int(a), int(b), int(c))
-                return True
-            except ValueError:
-                return False
-        return False
 
     def test_hours_left(self):
         # Test case for unit = hour
@@ -61,7 +51,7 @@ class NextBirthdayTest(unittest.TestCase):
     def test_missing_dateofbirth(self):
         # Test case for missing dateofbirth parameter
         url = self.base_url + "?unit=day"
-        response = requests.get(url)
+        response = requests.get(url, timeout=4)
         # print(url)
         self.assertEqual(response.status_code, 400)  # Check if the response status code is 400 (bad request)
         # message contains the expected error message
@@ -73,16 +63,16 @@ class NextBirthdayTest(unittest.TestCase):
         #print(url)
         response = requests.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['message'] == "Please specify dateofbirth in ISO format YYYY-MM-DD")
         # Check if the response status code is 400 (bad request)
-        #print(response.json()["message"])
+        assert(response.json()["message"] == "Please specify dateofbirth in ISO format YYYY-MM-DD")
         print(response.content, response.status_code)
 
     def test_missing_unit(self):
         # Test case for missing unit parameter
         url = self.base_url + "?dateofbirth="+date[0]+"&unit="
         response = requests.get(url)
-        self.assertEqual(response.status_code, 400)  # Check if the response status code is 400 (bad request)
+        # Check if the response status code is 400 (bad request)
+        self.assertEqual(response.status_code, 400)
         print(response.json()['message'])
         print(response.status_code)
 
